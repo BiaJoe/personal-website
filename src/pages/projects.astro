@@ -1,0 +1,213 @@
+---
+// src/pages/projects.astro
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Projects — Macintosh System 7 (Tape 2)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Silkscreen&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      .mac-desktop {
+        background-color: #808080;
+        background-image: 
+          radial-gradient(#000000 15%, transparent 16%),
+          radial-gradient(#ffffff 15%, transparent 16%);
+        background-size: 4px 4px;
+        background-position: 0 0, 2px 2px;
+      }
+      .pinstripe {
+        background: repeating-linear-gradient(
+          to bottom,
+          #000 0px,
+          #000 1px,
+          #fff 1px,
+          #fff 3px
+        );
+      }
+      .chicago-font {
+        font-family: 'Geneva', 'Silkscreen', -apple-system, BlinkMacSystemFont, 'Courier New', monospace;
+      }
+    </style>
+  </head>
+  <body class="mac-desktop min-h-screen text-black select-none overflow-x-hidden font-mono antialiased">
+    
+    <!-- System 7 Top Menu Bar -->
+    <header class="w-full bg-[#e8e8e8] border-b-2 border-black flex items-center justify-between px-3 py-1 text-sm shadow-sm z-50">
+      <div class="flex items-center gap-4 text-xs font-bold chicago-font">
+        <!-- Apple Logo -->
+        <span class="text-base leading-none cursor-pointer hover:bg-black hover:text-white px-1"></span>
+        <a href="/" class="hover:bg-black hover:text-white px-1.5 py-0.5 rounded-none flex items-center gap-1 text-blue-900 font-extrabold underline">
+          <span>← Eject to VCR Console</span>
+        </a>
+        <span class="hover:bg-black hover:text-white px-1.5 py-0.5 cursor-pointer">File</span>
+        <span class="hover:bg-black hover:text-white px-1.5 py-0.5 cursor-pointer">Edit</span>
+        <span class="hover:bg-black hover:text-white px-1.5 py-0.5 cursor-pointer">View</span>
+        <span class="hover:bg-black hover:text-white px-1.5 py-0.5 cursor-pointer">Special</span>
+      </div>
+      <div class="flex items-center gap-3 text-xs font-bold chicago-font">
+        <span class="hidden sm:inline bg-black text-white px-1.5 py-0.5 text-[10px]">TAPE 2 : MOUNTED</span>
+        <span id="mac-clock" class="tracking-widest">12:00 PM</span>
+        <span class="cursor-pointer hover:bg-black hover:text-white px-1">Finder</span>
+      </div>
+    </header>
+
+    <!-- Main Desktop Workspace -->
+    <main class="p-4 sm:p-8 flex justify-center items-start min-h-[calc(100vh-32px)]">
+      
+      <!-- System 7 Finder Window -->
+      <div class="w-full max-w-4xl bg-[#e8e8e8] border-2 border-black shadow-[4px_4px_0px_#000000] relative">
+        
+        <!-- Window Title Bar with Pinstripes -->
+        <div class="h-6 bg-white border-b-2 border-black flex items-center px-1 relative select-none">
+          <!-- Close Box -->
+          <a href="/" title="Close and return to Console" class="w-4 h-4 bg-white border-2 border-black inline-flex items-center justify-center hover:bg-black transition-colors group">
+            <span class="w-2 h-2 bg-transparent group-hover:bg-white"></span>
+          </a>
+
+          <!-- Pinstripe Left -->
+          <div class="flex-1 h-3 mx-2 pinstripe"></div>
+
+          <!-- Window Title -->
+          <div class="px-2 bg-white font-bold text-xs chicago-font uppercase tracking-wider text-black z-10">
+            Hard Disk : Projects & Experiments
+          </div>
+
+          <!-- Pinstripe Right -->
+          <div class="flex-1 h-3 mx-2 pinstripe"></div>
+
+          <!-- Zoom Box -->
+          <div class="w-4 h-4 bg-white border-2 border-black flex items-center justify-center">
+            <div class="w-2 h-2 border border-black"></div>
+          </div>
+        </div>
+
+        <!-- Window Subheader Status -->
+        <div class="bg-[#f0f0f0] border-b border-black px-4 py-1 flex justify-between items-center text-[11px] chicago-font text-neutral-700">
+          <span>4 items &bull; 1.4 MB floppy capacity</span>
+          <span class="hidden sm:inline">Volume: SYSTEM_7_BOOT</span>
+        </div>
+
+        <!-- Window Content Grid -->
+        <div class="p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 bg-white min-h-[420px]">
+          
+          <!-- Item 1 -->
+          <div class="border-2 border-black p-4 bg-[#f8f8f8] hover:bg-[#e6f0fa] transition-colors flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 border-2 border-black bg-yellow-200 flex items-center justify-center font-bold text-lg shadow-[2px_2px_0px_#000]">
+                  🪐
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm chicago-font text-black">Pretext Celestial Engine</h3>
+                  <span class="text-[10px] text-neutral-600 font-mono">TypeScript &bull; Canvas2D &bull; Astro</span>
+                </div>
+              </div>
+              <p class="text-xs text-neutral-700 leading-relaxed font-mono">
+                Interactive real-time 3D celestial sphere wireframe renderer paired with Cheng Lou's Pretext engine for responsive non-DOM multiline dynamic text wrapping at 60 FPS.
+              </p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-neutral-300 flex justify-between items-center text-[11px]">
+              <span class="font-mono text-neutral-500">v2.0 &bull; LIVE</span>
+              <a href="/" class="underline font-bold text-black hover:text-blue-700">Run App →</a>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="border-2 border-black p-4 bg-[#f8f8f8] hover:bg-[#e6f0fa] transition-colors flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 border-2 border-black bg-cyan-200 flex items-center justify-center font-bold text-lg shadow-[2px_2px_0px_#000]">
+                  🎛️
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm chicago-font text-black">Web Audio VCR Synthesizer</h3>
+                  <span class="text-[10px] text-neutral-600 font-mono">Web Audio API &bull; DSP</span>
+                </div>
+              </div>
+              <p class="text-xs text-neutral-700 leading-relaxed font-mono">
+                Procedural hardware click sound generator recreating solenoid switch clacks and relay relays using filtered brown noise and rapid exponential decay envelopes. Zero external audio samples.
+              </p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-neutral-300 flex justify-between items-center text-[11px]">
+              <span class="font-mono text-neutral-500">AudioNode Graph</span>
+              <a href="/" class="underline font-bold text-black hover:text-blue-700">Test Click →</a>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="border-2 border-black p-4 bg-[#f8f8f8] hover:bg-[#e6f0fa] transition-colors flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 border-2 border-black bg-emerald-200 flex items-center justify-center font-bold text-lg shadow-[2px_2px_0px_#000]">
+                  🖥️
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm chicago-font text-black">Home Server Edge Matrix</h3>
+                  <span class="text-[10px] text-neutral-600 font-mono">Debian &bull; WireGuard &bull; Docker</span>
+                </div>
+              </div>
+              <p class="text-xs text-neutral-700 leading-relaxed font-mono">
+                Self-hosted homelab stack running automated local services, private encrypted meshes, DNS sinkholes, and resilient backup routines running 24/7 on low-power hardware.
+              </p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-neutral-300 flex justify-between items-center text-[11px]">
+              <span class="font-mono text-neutral-500">99.98% Uptime</span>
+              <span class="text-emerald-700 font-bold">ACTIVE</span>
+            </div>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="border-2 border-black p-4 bg-[#f8f8f8] hover:bg-[#e6f0fa] transition-colors flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 border-2 border-black bg-purple-200 flex items-center justify-center font-bold text-lg shadow-[2px_2px_0px_#000]">
+                  🤖
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm chicago-font text-black">Quantized Neural Lab</h3>
+                  <span class="text-[10px] text-neutral-600 font-mono">Ollama &bull; GGUF &bull; Vector RAG</span>
+                </div>
+              </div>
+              <p class="text-xs text-neutral-700 leading-relaxed font-mono">
+                Local inference pipelines exploring low-bit quantization, specialized knowledge embeddings, and autonomous agent loops for code assistance and research automation.
+              </p>
+            </div>
+            <div class="mt-4 pt-2 border-t border-neutral-300 flex justify-between items-center text-[11px]">
+              <span class="font-mono text-neutral-500">Llama / Mistral</span>
+              <span class="text-purple-700 font-bold">EXPERIMENTAL</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Window Bottom Bar with Resize Handle -->
+        <div class="h-6 bg-[#e8e8e8] border-t-2 border-black flex justify-between items-center px-4 text-xs font-mono">
+          <span class="text-neutral-600">Double click an icon to inspect &bull; Tape 2 / Macintosh System 7</span>
+          <div class="w-4 h-4 border-l-2 border-t-2 border-black ml-auto flex flex-col justify-end items-end p-0.5">
+            <div class="w-2 h-2 bg-black"></div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <script>
+      function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const el = document.getElementById('mac-clock');
+        if (el) el.textContent = timeStr;
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+    </script>
+  </body>
+</html>

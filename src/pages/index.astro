@@ -1,0 +1,1248 @@
+---
+// src/pages/index.astro
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="it" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>BiaJoe // Hardware Console — VCR & Macintosh Classic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=VT323&family=Silkscreen&display=swap" rel="stylesheet">
+    <style>
+      /* Retro scanline & screen curve effects */
+      .crt-screen-container {
+        position: relative;
+        overflow: hidden;
+      }
+      .crt-screen-container::after {
+        content: " ";
+        display: block;
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+        background-size: 100% 3px, 6px 100%;
+        pointer-events: none;
+        z-index: 20;
+      }
+      .crt-glare {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 55%;
+        background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.01) 40%, transparent 60%);
+        pointer-events: none;
+        z-index: 21;
+        border-radius: 12px 12px 0 0;
+      }
+      
+      /* Brushed metal textures */
+      .vcr-chassis {
+        background: 
+          linear-gradient(180deg, #2b2d34 0%, #1c1d22 35%, #15161a 70%, #202228 100%);
+        box-shadow: 
+          inset 0 1px 0 rgba(255, 255, 255, 0.15),
+          inset 0 -2px 4px rgba(0, 0, 0, 0.8),
+          0 20px 50px rgba(0, 0, 0, 0.8),
+          0 0 0 1px #0a0a0c;
+      }
+
+      .mac-chassis {
+        background: 
+          linear-gradient(180deg, #ded8cb 0%, #cdc7b8 40%, #c4beaf 85%, #b5af9f 100%);
+        box-shadow: 
+          inset 0 2px 0 rgba(255, 255, 255, 0.6),
+          inset 0 -3px 6px rgba(0, 0, 0, 0.25),
+          0 20px 50px rgba(0, 0, 0, 0.5),
+          0 0 0 1px #8c8677;
+      }
+
+      /* Radio dial ruler ticks */
+      .radio-dial-scale {
+        background: repeating-linear-gradient(
+          to right,
+          rgba(255, 255, 255, 0.5) 0px,
+          rgba(255, 255, 255, 0.5) 1px,
+          transparent 1px,
+          transparent 8px
+        );
+      }
+      .radio-dial-scale-mac {
+        background: repeating-linear-gradient(
+          to right,
+          #000000 0px,
+          #000000 1px,
+          transparent 1px,
+          transparent 8px
+        );
+      }
+
+      /* Tactile 3D Buttons */
+      .vcr-key {
+        box-shadow: 
+          0 4px 0 #0d0e10,
+          0 6px 6px rgba(0, 0, 0, 0.6),
+          inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        transition: all 0.06s ease;
+      }
+      .vcr-key:active {
+        transform: translateY(3px);
+        box-shadow: 
+          0 1px 0 #0d0e10,
+          0 2px 3px rgba(0, 0, 0, 0.6),
+          inset 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      .mac-key {
+        box-shadow: 
+          0 3px 0 #8e887a,
+          0 4px 5px rgba(0,0,0,0.2),
+          inset 0 1px 0 rgba(255,255,255,0.7);
+        transition: all 0.06s ease;
+      }
+      .mac-key:active {
+        transform: translateY(2px);
+        box-shadow: 
+          0 1px 0 #8e887a,
+          0 1px 2px rgba(0,0,0,0.3),
+          inset 0 1px 3px rgba(0,0,0,0.3);
+      }
+
+      /* Toggle switch styles */
+      .toggle-switch-housing {
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.7), 0 1px 0 rgba(255,255,255,0.2);
+      }
+      .toggle-switch-lever {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.8);
+        transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Custom scrollbar & font classes */
+      .font-lcd {
+        font-family: 'VT323', monospace;
+      }
+      .font-retro {
+        font-family: 'Silkscreen', 'JetBrains Mono', monospace;
+      }
+    </style>
+  </head>
+  <body class="bg-[#0f1013] text-neutral-100 min-h-screen flex flex-col justify-between p-2 sm:p-6 select-none font-mono antialiased overflow-x-hidden">
+
+    <!-- TOP TELEMETRY STATUS -->
+    <header class="max-w-6xl w-full mx-auto flex flex-wrap items-center justify-between gap-3 text-xs px-2 py-1 mb-2 text-neutral-400">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse shadow-[0_0_8px_#ef4444]"></span>
+          <span class="font-bold tracking-wider text-red-500">LIVE ON HOME SERVER</span>
+        </span>
+        <span class="text-neutral-600 hidden sm:inline">&bull;</span>
+        <span class="font-mono text-neutral-300 bg-neutral-900 border border-neutral-800 px-2 py-0.5 rounded text-[11px]" id="live-timer">
+          UPTIME 00:00:00
+        </span>
+      </div>
+
+      <div class="flex items-center gap-4 text-[11px]">
+        <span class="text-neutral-400 hidden md:inline">SYSTEM: DUAL-ERA HARDWARE DECK</span>
+        <div class="flex items-center gap-1.5 bg-neutral-900/80 border border-neutral-800 px-2 py-1 rounded">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <span class="text-emerald-400 font-bold" id="telemetry-speed">TELEMETRY 60 FPS</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN HARDWARE CONSOLE CHASSIS -->
+    <main class="max-w-6xl w-full mx-auto my-auto relative">
+      
+      <!-- CHASSIS CONTAINER (Defaults to VCR theme, toggles to Mac Classic) -->
+      <div 
+        id="console-chassis" 
+        class="vcr-chassis rounded-xl p-4 sm:p-7 border border-[#383a42] transition-colors duration-300 relative"
+      >
+        <!-- Corner Chassis Screws -->
+        <div class="absolute top-2.5 left-2.5 w-2.5 h-2.5 rounded-full bg-[#111] border border-[#555] flex items-center justify-center text-[7px] text-[#777] font-sans">+</div>
+        <div class="absolute top-2.5 right-2.5 w-2.5 h-2.5 rounded-full bg-[#111] border border-[#555] flex items-center justify-center text-[7px] text-[#777] font-sans">+</div>
+        <div class="absolute bottom-2.5 left-2.5 w-2.5 h-2.5 rounded-full bg-[#111] border border-[#555] flex items-center justify-center text-[7px] text-[#777] font-sans">+</div>
+        <div class="absolute bottom-2.5 right-2.5 w-2.5 h-2.5 rounded-full bg-[#111] border border-[#555] flex items-center justify-center text-[7px] text-[#777] font-sans">+</div>
+
+        <!-- CONSOLE TOP BAR: Brand Badges + Physical Toggle Switch -->
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-black/40 pb-4 mb-5">
+          
+          <!-- Left Hardware Badge & Title -->
+          <div class="flex items-center gap-4">
+            <div id="deck-badge" class="px-2.5 py-1 bg-gradient-to-b from-[#222] to-[#111] border border-[#444] rounded text-amber-500 font-extrabold tracking-widest text-xs shadow-inner">
+              <span id="badge-text">BIAJOE HR-S8000 // VCR</span>
+            </div>
+            
+            <div class="flex items-center gap-2 text-[10px] tracking-wider text-neutral-400 uppercase font-semibold">
+              <span id="badge-aux1" class="px-1.5 py-0.5 bg-neutral-800/80 border border-neutral-700/60 rounded text-neutral-300">HQ 4-HEAD</span>
+              <span id="badge-aux2" class="px-1.5 py-0.5 bg-neutral-800/80 border border-neutral-700/60 rounded text-neutral-300">HI-FI STEREO</span>
+              <span id="badge-aux3" class="hidden sm:inline px-1.5 py-0.5 bg-neutral-800/80 border border-neutral-700/60 rounded text-neutral-300">AUTO-TRACKING</span>
+            </div>
+          </div>
+
+          <!-- Right Hardware Switch: Physical Era Toggle (VCR <-> Macintosh Classic 1984) -->
+          <div class="flex items-center gap-3 bg-black/40 px-3 py-1.5 rounded-lg border border-white/10 shadow-inner">
+            <span class="text-[10px] font-bold tracking-wider text-neutral-400" id="label-mode-vcr">80s VCR</span>
+            
+            <!-- Mechanical Toggle Button -->
+            <button 
+              id="era-toggle-btn" 
+              type="button" 
+              aria-label="Toggle Hardware Theme between VCR and Macintosh Classic"
+              class="w-14 h-7 rounded-full bg-[#1a1b1e] border-2 border-[#555] p-0.5 relative cursor-pointer toggle-switch-housing focus:outline-hidden"
+            >
+              <div 
+                id="toggle-lever" 
+                class="w-5 h-5 rounded-full bg-gradient-to-b from-[#eee] to-[#999] toggle-switch-lever transform translate-x-0"
+              ></div>
+            </button>
+
+            <span class="text-[10px] font-bold tracking-wider text-neutral-400" id="label-mode-mac">MAC 1984</span>
+          </div>
+
+        </div>
+
+        <!-- MAIN DECK GRID: Central CRT Screen + Right Hardware Bay -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+          
+          <!-- CENTRAL CRT MONITOR DISPLAY (Cols 1-8 / 9) -->
+          <div class="lg:col-span-8 flex flex-col">
+            <!-- CRT Outer Bezel -->
+            <div 
+              id="crt-bezel" 
+              class="p-3 sm:p-4 rounded-xl bg-[#0f1012] border-4 border-[#2c2d33] shadow-[inset_0_4px_12px_rgba(0,0,0,0.9),0_4px_10px_rgba(0,0,0,0.5)] flex-1 flex flex-col"
+            >
+              <!-- CRT Header Status Line inside screen -->
+              <div class="flex justify-between items-center px-2 py-1 mb-2 font-mono text-[11px] border-b border-white/10 text-emerald-400" id="crt-status-header">
+                <div class="flex items-center gap-2">
+                  <span class="animate-pulse">▶</span>
+                  <span class="font-bold tracking-wider" id="crt-station-label">CH 03: CELESTIAL TELEMETRY</span>
+                </div>
+                <div class="flex items-center gap-3 font-lcd text-sm">
+                  <span id="crt-sp-indicator">SP TAPE 02</span>
+                  <span class="text-neutral-400" id="crt-vcr-time">TC 00:24:18</span>
+                </div>
+              </div>
+
+              <!-- High-DPI Responsive Canvas Container with CRT Scanlines overlay -->
+              <div class="crt-screen-container relative flex-1 min-h-[360px] sm:min-h-[440px] rounded-lg bg-[#070b09] border border-white/5 flex items-center justify-center">
+                <div class="crt-glare"></div>
+                <canvas 
+                  id="celestial-canvas" 
+                  class="w-full h-full block cursor-crosshair relative z-10"
+                ></canvas>
+              </div>
+
+              <!-- CRT Sub-footer inside bezel -->
+              <div class="flex justify-between items-center px-2 pt-2 text-[10px] text-neutral-400 font-mono" id="crt-footer-info">
+                <span>WIRE: 3D CELESTIAL SPHERE + PRETEXT 60 FPS</span>
+                <span class="hidden sm:inline">DRAG OR HOVER CURSOR TO WRAP TEXT</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT BAY: Cassette Flap, FM Radio Tuner, Audio Meters & Controls -->
+          <div class="lg:col-span-4 flex flex-col justify-between gap-4">
+            
+            <!-- CASSETTE / FLOPPY DRIVE COMPARTMENT -->
+            <div 
+              id="media-bay" 
+              class="p-3 bg-[#131417] border-2 border-[#2a2c33] rounded-lg shadow-inner flex flex-col justify-between"
+            >
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400" id="media-slot-title">CASSETTE COMPARTMENT</span>
+                <span class="text-[9px] bg-red-950/80 text-red-400 border border-red-800/60 px-1.5 py-0.2 rounded font-bold" id="media-status-badge">REC INHIBIT</span>
+              </div>
+
+              <!-- Cassette Window with Rotating Spools -->
+              <div 
+                id="cassette-window" 
+                class="h-16 sm:h-20 bg-black/60 rounded border border-[#333] relative flex items-center justify-around px-4 overflow-hidden"
+              >
+                <!-- Left Spool -->
+                <div class="w-10 h-10 rounded-full border-2 border-[#555] bg-neutral-900 flex items-center justify-center relative animate-[spin_10s_linear_infinite]">
+                  <div class="w-3 h-3 rounded-full bg-neutral-700"></div>
+                  <div class="absolute w-1 h-8 bg-neutral-600/40 rounded-sm"></div>
+                  <div class="absolute w-8 h-1 bg-neutral-600/40 rounded-sm"></div>
+                </div>
+
+                <!-- Cassette Center Tape Label -->
+                <div class="text-center font-mono z-10">
+                  <div class="text-[10px] font-bold text-amber-400 tracking-wider">E-180 PRO MASTER</div>
+                  <div class="text-[9px] text-neutral-400">BIAS: HIGH // 70µs</div>
+                </div>
+
+                <!-- Right Spool -->
+                <div class="w-10 h-10 rounded-full border-2 border-[#555] bg-neutral-900 flex items-center justify-center relative animate-[spin_10s_linear_infinite]">
+                  <div class="w-3 h-3 rounded-full bg-neutral-700"></div>
+                  <div class="absolute w-1 h-8 bg-neutral-600/40 rounded-sm"></div>
+                  <div class="absolute w-8 h-1 bg-neutral-600/40 rounded-sm"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FM RADIO TUNER (88.0 MHz - 108.0 MHz) -->
+            <div 
+              id="fm-tuner-bay" 
+              class="p-3 bg-[#131417] border-2 border-[#2a2c33] rounded-lg shadow-inner flex flex-col gap-2"
+            >
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400" id="tuner-title">FM TUNER / TELEMETRY</span>
+                <span class="font-lcd text-lg text-emerald-400 bg-black/80 px-2 py-0.5 rounded border border-emerald-900/60" id="freq-readout">
+                  98.5 MHz
+                </span>
+              </div>
+
+              <!-- Illuminated Radio Scale with Draggable / Clickable Slider -->
+              <div class="relative py-2">
+                <div 
+                  id="radio-scale-bg" 
+                  class="h-9 rounded bg-[#1c241e] border border-emerald-900/40 relative overflow-hidden flex items-center shadow-inner cursor-pointer"
+                >
+                  <!-- Dial scale markings -->
+                  <div class="w-full h-4 radio-dial-scale opacity-60"></div>
+
+                  <!-- Frequency Numbers Overlay -->
+                  <div class="absolute inset-0 flex justify-between items-end px-2 pb-1 text-[9px] font-mono text-emerald-400/80 font-bold pointer-events-none">
+                    <span>88</span>
+                    <span>92</span>
+                    <span>96</span>
+                    <span>100</span>
+                    <span>104</span>
+                    <span>108</span>
+                  </div>
+
+                  <!-- Tuner Indicator Needle (Red Needle) -->
+                  <div 
+                    id="tuner-needle" 
+                    class="absolute top-0 bottom-0 w-1 bg-red-500 shadow-[0_0_6px_#ef4444] pointer-events-none z-10 transition-all duration-75"
+                    style="left: 52.5%;"
+                  >
+                    <div class="w-2.5 h-1.5 bg-red-600 -translate-x-[3px] rounded-b-xs"></div>
+                  </div>
+                </div>
+
+                <!-- Input range overlay for clean dragging & keyboard accessibility -->
+                <input 
+                  type="range" 
+                  id="radio-slider" 
+                  min="88.0" 
+                  max="108.0" 
+                  step="0.1" 
+                  value="98.5" 
+                  aria-label="FM Radio Frequency Tuner"
+                  class="w-full absolute inset-0 opacity-0 cursor-pointer h-full z-20"
+                />
+              </div>
+
+              <!-- Channel Preset Name -->
+              <div class="flex justify-between items-center text-[10px] text-neutral-400 font-mono">
+                <span id="station-name" class="text-amber-400 font-semibold truncate">STATION: ORION CELESTIAL BEACON</span>
+                <span id="stereo-indicator" class="text-red-500 font-bold text-[9px] animate-pulse">● STEREO</span>
+              </div>
+            </div>
+
+            <!-- AUDIO VU LEVEL METERS -->
+            <div id="vu-bay" class="p-2.5 bg-[#131417] border border-[#262830] rounded-lg">
+              <div class="flex justify-between text-[9px] text-neutral-400 font-mono mb-1 font-bold">
+                <span>AUDIO CH-1</span>
+                <span>CH-2</span>
+              </div>
+              <div class="space-y-1">
+                <div class="h-2 bg-neutral-900 rounded-xs flex overflow-hidden border border-neutral-800 gap-0.5 p-0.5">
+                  <div class="h-full bg-emerald-500 rounded-xs w-3/4 animate-pulse"></div>
+                  <div class="h-full bg-amber-500 rounded-xs w-1/6"></div>
+                  <div class="h-full bg-red-500 rounded-xs w-1/12 opacity-40"></div>
+                </div>
+                <div class="h-2 bg-neutral-900 rounded-xs flex overflow-hidden border border-neutral-800 gap-0.5 p-0.5">
+                  <div class="h-full bg-emerald-500 rounded-xs w-2/3 animate-pulse"></div>
+                  <div class="h-full bg-amber-500 rounded-xs w-1/5"></div>
+                  <div class="h-full bg-red-500 rounded-xs w-1/12 opacity-20"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- MECHANICAL VCR BUTTONS -->
+            <div class="grid grid-cols-2 gap-2.5">
+              
+              <!-- PLAY BIO BUTTON -->
+              <button 
+                id="btn-play-bio" 
+                type="button"
+                class="vcr-key bg-gradient-to-b from-[#3a3d46] to-[#202227] text-white p-2.5 rounded-md font-bold text-xs uppercase tracking-wider border border-[#555] flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span class="text-emerald-400">▶</span>
+                <span class="btn-label">PLAY BIO</span>
+              </button>
+
+              <!-- MUTE AUDIO BUTTON -->
+              <button 
+                id="btn-mute" 
+                type="button"
+                class="vcr-key bg-gradient-to-b from-[#3a3d46] to-[#202227] text-white p-2.5 rounded-md font-bold text-xs uppercase tracking-wider border border-[#555] flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span id="mute-icon" class="text-amber-400">🔊</span>
+                <span id="mute-label" class="btn-label">AUDIO ON</span>
+              </button>
+
+              <!-- CV [TAPE 1] LINK BUTTON -->
+              <a 
+                id="btn-tape1"
+                href="/cv" 
+                class="vcr-key bg-gradient-to-b from-[#3a3d46] to-[#202227] text-white p-2.5 rounded-md font-bold text-xs uppercase tracking-wider border border-[#555] flex items-center justify-center gap-1.5 cursor-pointer text-center no-underline"
+              >
+                <span class="text-cyan-400">📼</span>
+                <span class="btn-label">CV [TAPE 1]</span>
+              </a>
+
+              <!-- PROJECTS [TAPE 2] LINK BUTTON -->
+              <a 
+                id="btn-tape2"
+                href="/projects" 
+                class="vcr-key bg-gradient-to-b from-[#3a3d46] to-[#202227] text-white p-2.5 rounded-md font-bold text-xs uppercase tracking-wider border border-[#555] flex items-center justify-center gap-1.5 cursor-pointer text-center no-underline"
+              >
+                <span class="text-purple-400">💾</span>
+                <span class="btn-label">PROJECTS [TAPE 2]</span>
+              </a>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- FOOTER EMBOSSED LOGO & STATUS -->
+        <div class="mt-5 pt-3 border-t border-black/40 flex flex-wrap justify-between items-center text-[10px] text-neutral-400 font-mono">
+          <div class="flex items-center gap-2">
+            <span class="text-neutral-300 font-bold" id="brand-tagline">NIPPON VIDEO CORP. // AUTOMATED VECTOR GRAPHICS</span>
+            <span class="text-neutral-500 hidden sm:inline">&bull; SER. NO. 84-4096-TK</span>
+          </div>
+          <div>
+            <span id="theme-era-name" class="font-bold text-neutral-300">SYSTEM: 1980s VCR CONSOLE</span>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- FOOTER NAV & GITHUB LINK -->
+    <footer class="max-w-6xl w-full mx-auto text-center text-xs text-neutral-400 py-2 font-mono flex flex-wrap justify-between items-center gap-2">
+      <div>
+        Built with <a href="https://astro.build" class="underline hover:text-white" target="_blank">Astro</a> &bull; Dynamic Text Wrap via <code class="text-neutral-300">@chenglou/pretext</code>
+      </div>
+      <div>
+        Source: <a href="https://github.com/BiaJoe/personal-website" class="underline hover:text-white" target="_blank">github.com/BiaJoe/personal-website</a>
+      </div>
+    </footer>
+
+    <!-- CLIENT LOGIC: Canvas 3D Celestial Sphere + Pretext + Web Audio + Themes -->
+    <script>
+      import { prepareWithSegments, layoutNextLine, type LayoutCursor, type PreparedTextWithSegments } from '@chenglou/pretext';
+
+      // ==========================================
+      // 1. WEB AUDIO API MECHANICAL CLICK ENGINE
+      // ==========================================
+      let audioCtx: AudioContext | null = null;
+      let isAudioMuted = false;
+
+      function getAudioContext(): AudioContext | null {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+          }
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      }
+
+      function playSound(type: 'click' | 'toggle' | 'tune' | 'glitch' = 'click') {
+        if (isAudioMuted) return;
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
+        try {
+          const now = ctx.currentTime;
+
+          if (type === 'tune') {
+            // Subtle high-frequency needle tick
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(600 + Math.random() * 400, now);
+            gain.gain.setValueAtTime(0.02, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.012);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.015);
+            return;
+          }
+
+          if (type === 'glitch') {
+            // Static noise burst
+            const bufferSize = Math.floor(ctx.sampleRate * 0.04);
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 1400;
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start(now);
+            return;
+          }
+
+          // Mechanical solenoid / spring switch click
+          // Component 1: Thump
+          const osc = ctx.createOscillator();
+          const oscGain = ctx.createGain();
+          const startFreq = type === 'toggle' ? 260 : 190;
+          osc.frequency.setValueAtTime(startFreq, now);
+          osc.frequency.exponentialRampToValueAtTime(40, now + 0.035);
+          oscGain.gain.setValueAtTime(0.09, now);
+          oscGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
+          osc.connect(oscGain);
+          oscGain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.04);
+
+          // Component 2: High tactile noise snap
+          const bufSize = Math.floor(ctx.sampleRate * 0.025);
+          const noiseBuf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+          const chData = noiseBuf.getChannelData(0);
+          for (let i = 0; i < bufSize; i++) chData[i] = Math.random() * 2 - 1;
+          const noiseSrc = ctx.createBufferSource();
+          noiseSrc.buffer = noiseBuf;
+
+          const bp = ctx.createBiquadFilter();
+          bp.type = 'bandpass';
+          bp.frequency.value = type === 'toggle' ? 3400 : 2200;
+          bp.Q.value = 3.5;
+
+          const noiseGain = ctx.createGain();
+          noiseGain.gain.setValueAtTime(0.08, now);
+          noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.025);
+
+          noiseSrc.connect(bp);
+          bp.connect(noiseGain);
+          noiseGain.connect(ctx.destination);
+          noiseSrc.start(now);
+        } catch {
+          // AudioContext gracefully fails if unprompted by gesture
+        }
+      }
+
+      // ==========================================
+      // 2. THEME SWITCHING: VCR <-> MACINTOSH CLASSIC 1984
+      // ==========================================
+      let currentEra: 'vcr' | 'mac' = 'vcr';
+
+      const chassisEl = document.getElementById('console-chassis');
+      const toggleBtn = document.getElementById('era-toggle-btn');
+      const toggleLever = document.getElementById('toggle-lever');
+      const crtBezel = document.getElementById('crt-bezel');
+      const mediaBay = document.getElementById('media-bay');
+      const fmBay = document.getElementById('fm-tuner-bay');
+      const vuBay = document.getElementById('vu-bay');
+      const badgeText = document.getElementById('badge-text');
+      const mediaSlotTitle = document.getElementById('media-slot-title');
+      const mediaStatusBadge = document.getElementById('media-status-badge');
+      const cassetteWindow = document.getElementById('cassette-window');
+      const themeEraName = document.getElementById('theme-era-name');
+      const radioScaleBg = document.getElementById('radio-scale-bg');
+      const brandTagline = document.getElementById('brand-tagline');
+
+      function setEra(era: 'vcr' | 'mac') {
+        currentEra = era;
+        playSound('toggle');
+
+        const isMac = era === 'mac';
+
+        if (toggleLever) {
+          toggleLever.style.transform = isMac ? 'translateX(28px)' : 'translateX(0px)';
+        }
+
+        if (chassisEl) {
+          chassisEl.className = isMac 
+            ? 'mac-chassis rounded-xl p-4 sm:p-7 border border-[#9d9789] transition-colors duration-300 relative text-[#111]' 
+            : 'vcr-chassis rounded-xl p-4 sm:p-7 border border-[#383a42] transition-colors duration-300 relative text-white';
+        }
+
+        if (crtBezel) {
+          crtBezel.className = isMac
+            ? 'p-3 sm:p-4 rounded-xl bg-[#c0baa9] border-4 border-[#8e8878] shadow-[inset_0_4px_12px_rgba(0,0,0,0.4),0_4px_10px_rgba(0,0,0,0.2)] flex-1 flex flex-col'
+            : 'p-3 sm:p-4 rounded-xl bg-[#0f1012] border-4 border-[#2c2d33] shadow-[inset_0_4px_12px_rgba(0,0,0,0.9),0_4px_10px_rgba(0,0,0,0.5)] flex-1 flex flex-col';
+        }
+
+        if (mediaBay) {
+          mediaBay.className = isMac
+            ? 'p-3 bg-[#ccc5b5] border-2 border-[#9b9484] rounded-lg shadow-inner flex flex-col justify-between text-black'
+            : 'p-3 bg-[#131417] border-2 border-[#2a2c33] rounded-lg shadow-inner flex flex-col justify-between text-white';
+        }
+
+        if (fmBay) {
+          fmBay.className = isMac
+            ? 'p-3 bg-[#ccc5b5] border-2 border-[#9b9484] rounded-lg shadow-inner flex flex-col gap-2 text-black'
+            : 'p-3 bg-[#131417] border-2 border-[#2a2c33] rounded-lg shadow-inner flex flex-col gap-2 text-white';
+        }
+
+        if (vuBay) {
+          vuBay.className = isMac
+            ? 'p-2.5 bg-[#ccc5b5] border border-[#9b9484] rounded-lg text-black'
+            : 'p-2.5 bg-[#131417] border border-[#262830] rounded-lg text-white';
+        }
+
+        if (badgeText) {
+          badgeText.textContent = isMac ? ' Macintosh Classic 1984' : 'BIAJOE HR-S8000 // VCR';
+          badgeText.className = isMac ? 'text-black font-extrabold tracking-wider text-xs' : 'text-amber-500 font-extrabold tracking-widest text-xs';
+        }
+
+        if (mediaSlotTitle) {
+          mediaSlotTitle.textContent = isMac ? '1.44MB FD DRIVE (SONY)' : 'CASSETTE COMPARTMENT';
+          mediaSlotTitle.className = isMac ? 'text-[10px] font-bold uppercase tracking-wider text-neutral-800' : 'text-[10px] font-bold uppercase tracking-wider text-neutral-400';
+        }
+
+        if (mediaStatusBadge) {
+          mediaStatusBadge.textContent = isMac ? 'READ / WRITE' : 'REC INHIBIT';
+          mediaStatusBadge.className = isMac 
+            ? 'text-[9px] bg-neutral-300 text-neutral-900 border border-neutral-500 px-1.5 py-0.2 rounded font-bold'
+            : 'text-[9px] bg-red-950/80 text-red-400 border border-red-800/60 px-1.5 py-0.2 rounded font-bold';
+        }
+
+        if (cassetteWindow) {
+          if (isMac) {
+            cassetteWindow.innerHTML = `
+              <div class="w-full h-4 bg-black rounded-xs border border-neutral-700 relative flex items-center justify-center">
+                <div class="w-16 h-1 bg-neutral-600 rounded-xs"></div>
+                <div class="absolute right-3 w-2 h-2 rounded-full bg-emerald-500"></div>
+              </div>
+              <div class="text-center font-mono text-[9px] text-neutral-800 mt-1 font-bold">
+                SYSTEM 1.0 DISK INSERTED
+              </div>
+            `;
+          } else {
+            cassetteWindow.innerHTML = `
+              <div class="w-10 h-10 rounded-full border-2 border-[#555] bg-neutral-900 flex items-center justify-center relative animate-[spin_10s_linear_infinite]">
+                <div class="w-3 h-3 rounded-full bg-neutral-700"></div>
+                <div class="absolute w-1 h-8 bg-neutral-600/40 rounded-sm"></div>
+                <div class="absolute w-8 h-1 bg-neutral-600/40 rounded-sm"></div>
+              </div>
+              <div class="text-center font-mono z-10">
+                <div class="text-[10px] font-bold text-amber-400 tracking-wider">E-180 PRO MASTER</div>
+                <div class="text-[9px] text-neutral-400">BIAS: HIGH // 70µs</div>
+              </div>
+              <div class="w-10 h-10 rounded-full border-2 border-[#555] bg-neutral-900 flex items-center justify-center relative animate-[spin_10s_linear_infinite]">
+                <div class="w-3 h-3 rounded-full bg-neutral-700"></div>
+                <div class="absolute w-1 h-8 bg-neutral-600/40 rounded-sm"></div>
+                <div class="absolute w-8 h-1 bg-neutral-600/40 rounded-sm"></div>
+              </div>
+            `;
+          }
+        }
+
+        if (radioScaleBg) {
+          radioScaleBg.className = isMac
+            ? 'h-9 rounded bg-[#e8e4d8] border border-black/40 relative overflow-hidden flex items-center shadow-inner cursor-pointer'
+            : 'h-9 rounded bg-[#1c241e] border border-emerald-900/40 relative overflow-hidden flex items-center shadow-inner cursor-pointer';
+          const innerRuler = radioScaleBg.querySelector('.radio-dial-scale, .radio-dial-scale-mac');
+          if (innerRuler) {
+            innerRuler.className = isMac ? 'w-full h-4 radio-dial-scale-mac opacity-70' : 'w-full h-4 radio-dial-scale opacity-60';
+          }
+        }
+
+        if (themeEraName) {
+          themeEraName.textContent = isMac ? 'SYSTEM: APPLE MACINTOSH CLASSIC 1984' : 'SYSTEM: 1980s VCR CONSOLE';
+        }
+
+        if (brandTagline) {
+          brandTagline.textContent = isMac ? 'APPLE COMPUTER INC. // PERSONAL COMPUTING DIVISION' : 'NIPPON VIDEO CORP. // AUTOMATED VECTOR GRAPHICS';
+        }
+
+        // Update button styles
+        document.querySelectorAll('.vcr-key, .mac-key').forEach(el => {
+          el.className = isMac
+            ? 'mac-key bg-gradient-to-b from-[#eee9dc] to-[#c8c2b3] text-black p-2.5 rounded-md font-bold text-xs uppercase tracking-wider border border-[#9b9484] flex items-center justify-center gap-1.5 cursor-pointer text-center no-underline'
+            : 'vcr-key bg-gradient-to-b from-[#3a3d46] to-[#202227] text-white p-2.5 rounded-md font-bold text-xs uppercase tracking-wider border border-[#555] flex items-center justify-center gap-1.5 cursor-pointer text-center no-underline';
+        });
+      }
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          setEra(currentEra === 'vcr' ? 'mac' : 'vcr');
+        });
+      }
+
+      // ==========================================
+      // 3. HARDWARE BUTTONS & ACTIONS
+      // ==========================================
+      const btnPlayBio = document.getElementById('btn-play-bio');
+      const btnMute = document.getElementById('btn-mute');
+      const muteLabel = document.getElementById('mute-label');
+      const muteIcon = document.getElementById('mute-icon');
+      const btnTape1 = document.getElementById('btn-tape1');
+      const btnTape2 = document.getElementById('btn-tape2');
+
+      if (btnPlayBio) {
+        btnPlayBio.addEventListener('click', () => {
+          playSound('glitch');
+          triggerGlitch();
+        });
+      }
+
+      if (btnMute) {
+        btnMute.addEventListener('click', () => {
+          isAudioMuted = !isAudioMuted;
+          playSound('click');
+          if (muteLabel && muteIcon) {
+            muteLabel.textContent = isAudioMuted ? 'MUTED' : 'AUDIO ON';
+            muteIcon.textContent = isAudioMuted ? '🔇' : '🔊';
+          }
+        });
+      }
+
+      [btnTape1, btnTape2].forEach(btn => {
+        if (btn) {
+          btn.addEventListener('click', () => {
+            playSound('click');
+          });
+        }
+      });
+
+      // Uptime Timer Counter
+      let uptimeSeconds = 0;
+      const liveTimerEl = document.getElementById('live-timer');
+      const crtVcrTimeEl = document.getElementById('crt-vcr-time');
+
+      setInterval(() => {
+        uptimeSeconds++;
+        const hrs = String(Math.floor(uptimeSeconds / 3600)).padStart(2, '0');
+        const mins = String(Math.floor((uptimeSeconds % 3600) / 60)).padStart(2, '0');
+        const secs = String(uptimeSeconds % 60).padStart(2, '0');
+        const timeStr = `${hrs}:${mins}:${secs}`;
+        if (liveTimerEl) liveTimerEl.textContent = `UPTIME ${timeStr}`;
+        if (crtVcrTimeEl) crtVcrTimeEl.textContent = `TC 00:${mins}:${secs}`;
+      }, 1000);
+
+      // ==========================================
+      // 4. FM RADIO SLIDER LOGIC
+      // ==========================================
+      let currentFreq = 98.5;
+      const radioSlider = document.getElementById('radio-slider') as HTMLInputElement | null;
+      const tunerNeedle = document.getElementById('tuner-needle');
+      const freqReadout = document.getElementById('freq-readout');
+      const stationNameEl = document.getElementById('station-name');
+
+      const STATIONS: { min: number; max: number; name: string }[] = [
+        { min: 88.0, max: 91.0, name: 'DEEP SPACE TELEMETRY RELAY' },
+        { min: 91.1, max: 96.0, name: 'NEURAL FM // QUANTIZED BROADCAST' },
+        { min: 96.1, max: 101.5, name: 'ORION CELESTIAL BEACON' },
+        { min: 101.6, max: 105.0, name: 'SYNTHWAVE CARRIER // 1984 WAVE' },
+        { min: 105.1, max: 108.0, name: 'HYPERDRIVE TELEMETRY MATRIX' },
+      ];
+
+      function updateRadio(freq: number) {
+        currentFreq = freq;
+        const pct = ((freq - 88.0) / (108.0 - 88.0)) * 100;
+        if (tunerNeedle) {
+          tunerNeedle.style.left = `${pct}%`;
+        }
+        if (freqReadout) {
+          freqReadout.textContent = `${freq.toFixed(1)} MHz`;
+        }
+        const station = STATIONS.find(s => freq >= s.min && freq <= s.max) || STATIONS[2];
+        if (stationNameEl) {
+          stationNameEl.textContent = `STATION: ${station.name}`;
+        }
+      }
+
+      if (radioSlider) {
+        radioSlider.addEventListener('input', (e) => {
+          const val = parseFloat((e.target as HTMLInputElement).value);
+          updateRadio(val);
+          playSound('tune');
+        });
+      }
+
+      // ==========================================
+      // 5. CANVAS 3D CELESTIAL SPHERE & PRETEXT
+      // ==========================================
+      const canvas = document.getElementById('celestial-canvas') as HTMLCanvasElement | null;
+      if (!canvas) throw new Error('Canvas not found');
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('Could not get 2D context');
+
+      // Presentation text for Pretext layout
+      const BIO_PARAGRAPH = 
+        "BIAJOE // CS & SYSTEMS ENGINEER. " +
+        "Studente di Informatica appassionato di Intelligenza Artificiale, modelli quantizzati locali e computer graphics interattiva. " +
+        "Progetto e mantengo architetture self-hosted resilienti su micro-cluster casalinghi, esplorando l'intersezione tra hardware analogico vintage e moderne tecnologie web ad alte prestazioni. " +
+        "Questa plancia interattiva esegue il layout vettoriale non-DOM a 60 FPS con Pretext: muovi il cursore per guidare la Sfera Celeste e guarda il testo disporsi istantaneamente e fluidamente attorno al suo profilo.";
+
+      const FONT_SPEC = '13px "JetBrains Mono", "Courier New", monospace';
+      const LINE_HEIGHT = 20;
+
+      // Prepare text segments once using Pretext (instant measurement)
+      let preparedBio: PreparedTextWithSegments = prepareWithSegments(BIO_PARAGRAPH, FONT_SPEC);
+
+      // Sphere physics & coordinates
+      let sphereX = 0;
+      let sphereY = 0;
+      let targetX = 0;
+      let targetY = 0;
+      let rotY = 0;
+      let rotX = 0.45;
+      let glitchFrames = 0;
+
+      function triggerGlitch() {
+        glitchFrames = 18;
+      }
+
+      // Constellation stars data (Spherical Right Ascension [0, 2PI], Declination [-PI/2, PI/2])
+      interface Star {
+        ra: number;
+        dec: number;
+        mag: number;
+        name?: string;
+      }
+
+      const STARS: Star[] = [
+        // Orion
+        { ra: 1.54, dec: 0.13, mag: 1.8, name: 'Betelgeuse' },
+        { ra: 1.34, dec: -0.14, mag: 1.9, name: 'Rigel' },
+        { ra: 1.45, dec: 0.11, mag: 1.2 },
+        { ra: 1.48, dec: -0.16, mag: 1.2 },
+        { ra: 1.46, dec: -0.03, mag: 1.4, name: 'Alnilam' },
+        { ra: 1.44, dec: -0.01, mag: 1.3 },
+        { ra: 1.48, dec: -0.05, mag: 1.3 },
+
+        // Ursa Major (Big Dipper)
+        { ra: 2.88, dec: 1.08, mag: 1.6, name: 'Dubhe' },
+        { ra: 2.89, dec: 0.98, mag: 1.5, name: 'Merak' },
+        { ra: 3.11, dec: 0.94, mag: 1.4 },
+        { ra: 3.19, dec: 1.00, mag: 1.3 },
+        { ra: 3.37, dec: 0.97, mag: 1.5, name: 'Alioth' },
+        { ra: 3.51, dec: 0.96, mag: 1.6, name: 'Mizar' },
+        { ra: 3.63, dec: 0.86, mag: 1.6, name: 'Alkaid' },
+
+        // Cassiopeia
+        { ra: 0.15, dec: 1.03, mag: 1.7, name: 'Schedar' },
+        { ra: 0.05, dec: 1.02, mag: 1.5 },
+        { ra: 0.24, dec: 1.06, mag: 1.8 },
+        { ra: 0.35, dec: 1.05, mag: 1.4 },
+        { ra: 0.46, dec: 1.11, mag: 1.5 },
+
+        // Polaris (North Star)
+        { ra: 0.66, dec: 1.55, mag: 2.0, name: 'Polaris' },
+
+        // Cygnus (Northern Cross)
+        { ra: 5.41, dec: 0.79, mag: 1.8, name: 'Deneb' },
+        { ra: 5.12, dec: 0.49, mag: 1.4, name: 'Albireo' },
+        { ra: 5.34, dec: 0.70, mag: 1.5 },
+        { ra: 5.46, dec: 0.88, mag: 1.4 },
+        { ra: 5.22, dec: 0.58, mag: 1.3 },
+      ];
+
+      // Constellation connector lines (pairs of star indices)
+      const CONSTELLATION_LINES: [number, number][] = [
+        // Orion
+        [0, 2], [2, 5], [5, 4], [4, 6], [6, 3], [3, 1], [0, 4],
+        // Big Dipper
+        [7, 8], [8, 9], [9, 10], [10, 7], [10, 11], [11, 12], [12, 13],
+        // Cassiopeia
+        [14, 15], [14, 16], [16, 17], [17, 18],
+        // Cygnus
+        [20, 22], [22, 21], [22, 23], [22, 24]
+      ];
+
+      // High-DPI Canvas Resizing
+      let displayW = 0;
+      let displayH = 0;
+
+      function resizeCanvas() {
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        displayW = rect.width;
+        displayH = rect.height;
+
+        canvas.width = Math.floor(displayW * dpr);
+        canvas.height = Math.floor(displayH * dpr);
+
+        if (ctx) {
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        // Set default sphere target on right side
+        if (targetX === 0 && targetY === 0) {
+          targetX = displayW * 0.70;
+          targetY = displayH * 0.50;
+          sphereX = targetX;
+          sphereY = targetY;
+        }
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      // Mouse tracking on Canvas
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        targetX = e.clientX - rect.left;
+        targetY = e.clientY - rect.top;
+      });
+
+      canvas.addEventListener('mouseleave', () => {
+        // Return sphere smoothly to resting coordinate
+        targetX = displayW * 0.70;
+        targetY = displayH * 0.50;
+      });
+
+      // Touch tracking
+      canvas.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 0) {
+          const rect = canvas.getBoundingClientRect();
+          targetX = e.touches[0].clientX - rect.left;
+          targetY = e.touches[0].clientY - rect.top;
+        }
+      }, { passive: true });
+
+      // 3D Math Helper: project (x, y, z) with rotation
+      function projectPoint(x: number, y: number, z: number, rX: number, rY: number) {
+        // Rotate around Y
+        const cosY = Math.cos(rY);
+        const sinY = Math.sin(rY);
+        const x1 = x * cosY + z * sinY;
+        const z1 = -x * sinY + z * cosY;
+
+        // Rotate around X
+        const cosX = Math.cos(rX);
+        const sinX = Math.sin(rX);
+        const y2 = y * cosX - z1 * sinX;
+        const z2 = y * sinX + z1 * cosX;
+
+        return { x: x1, y: y2, z: z2 };
+      }
+
+      // Convert spherical coord (ra, dec, radius) to Cartesian
+      function sphericalToCartesian(ra: number, dec: number, r: number) {
+        return {
+          x: r * Math.cos(dec) * Math.cos(ra),
+          y: r * Math.sin(dec),
+          z: r * Math.cos(dec) * Math.sin(ra)
+        };
+      }
+
+      // ==========================================
+      // 6. MAIN 60 FPS ANIMATION & RENDER LOOP
+      // ==========================================
+      function renderFrame() {
+        if (!ctx || !canvas) return;
+
+        // Modulate sphere properties from FM radio slider
+        const freqDelta = currentFreq - 88.0; // 0.0 to 20.0
+        const speedMultiplier = 0.005 + (freqDelta / 20.0) * 0.015;
+        const sphereBaseRadius = Math.min(displayW, displayH) * 0.26;
+        const radiusZoom = 0.85 + (freqDelta / 20.0) * 0.35;
+        const sphereRadius = sphereBaseRadius * radiusZoom;
+
+        rotY += speedMultiplier;
+
+        // Lerp sphere coordinates smoothly towards target cursor
+        sphereX += (targetX - sphereX) * 0.08;
+        sphereY += (targetY - sphereY) * 0.08;
+
+        // Clamp sphere inside visible canvas boundaries
+        const boundPadding = sphereRadius + 15;
+        sphereX = Math.max(boundPadding, Math.min(displayW - boundPadding, sphereX));
+        sphereY = Math.max(boundPadding, Math.min(displayH - boundPadding, sphereY));
+
+        const isMac = currentEra === 'mac';
+
+        // 1. Clear background
+        ctx.save();
+        if (isMac) {
+          // 1984 Macintosh Classic Monochrome LCD / Paper White
+          ctx.fillStyle = '#f3f0e8';
+          ctx.fillRect(0, 0, displayW, displayH);
+
+          // Subtle 1-bit stipple / dither grid
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
+          for (let py = 0; py < displayH; py += 3) {
+            for (let px = (py % 6 === 0 ? 0 : 2); px < displayW; px += 4) {
+              ctx.fillRect(px, py, 1, 1);
+            }
+          }
+        } else {
+          // 80s VCR Dark Phosphor Display
+          ctx.fillStyle = '#060a08';
+          ctx.fillRect(0, 0, displayW, displayH);
+
+          // Phosphor radial ambient glow behind sphere
+          const radial = ctx.createRadialGradient(
+            sphereX, sphereY, 5,
+            sphereX, sphereY, sphereRadius * 1.6
+          );
+          radial.addColorStop(0, 'rgba(40, 220, 120, 0.12)');
+          radial.addColorStop(0.6, 'rgba(20, 100, 60, 0.04)');
+          radial.addColorStop(1, 'transparent');
+          ctx.fillStyle = radial;
+          ctx.fillRect(0, 0, displayW, displayH);
+        }
+
+        // CRT Glitch tracking jitter effect
+        if (glitchFrames > 0) {
+          glitchFrames--;
+          const jitterY = (Math.random() - 0.5) * 8;
+          ctx.translate(0, jitterY);
+
+          // Glitch scanlines
+          ctx.fillStyle = isMac ? 'rgba(0,0,0,0.1)' : 'rgba(80,255,140,0.2)';
+          ctx.fillRect(0, Math.random() * displayH, displayW, 6);
+        }
+
+        // ==========================================
+        // 2. RENDER 3D CELESTIAL SPHERE WIREFRAME
+        // ==========================================
+        const sphereColorFront = isMac ? '#000000' : 'rgba(80, 255, 140, 0.85)';
+        const sphereColorBack = isMac ? 'rgba(0, 0, 0, 0.22)' : 'rgba(30, 140, 70, 0.35)';
+        const eclipticColor = isMac ? '#000000' : 'rgba(255, 190, 40, 0.9)';
+        const starColor = isMac ? '#000000' : '#ffffff';
+
+        // Outer Sphere Rim
+        ctx.beginPath();
+        ctx.arc(sphereX, sphereY, sphereRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = isMac ? '#000000' : 'rgba(80, 255, 140, 0.9)';
+        ctx.lineWidth = isMac ? 1.5 : 1.2;
+        ctx.stroke();
+
+        // Parallels (Latitude Rings)
+        const latitudes = [-1.047, -0.523, 0, 0.523, 1.047]; // -60°, -30°, 0° (Equator), 30°, 60°
+        latitudes.forEach(lat => {
+          const rRing = sphereRadius * Math.cos(lat);
+          const yRing = sphereRadius * Math.sin(lat);
+          const isEquator = lat === 0;
+
+          const segments = 36;
+          for (let i = 0; i < segments; i++) {
+            const a1 = (i / segments) * Math.PI * 2;
+            const a2 = ((i + 1) / segments) * Math.PI * 2;
+
+            const p1 = projectPoint(rRing * Math.cos(a1), yRing, rRing * Math.sin(a1), rotX, rotY);
+            const p2 = projectPoint(rRing * Math.cos(a2), yRing, rRing * Math.sin(a2), rotX, rotY);
+
+            const isFront = (p1.z + p2.z) / 2 > 0;
+
+            ctx.beginPath();
+            ctx.moveTo(sphereX + p1.x, sphereY - p1.y);
+            ctx.lineTo(sphereX + p2.x, sphereY - p2.y);
+            ctx.strokeStyle = isFront ? sphereColorFront : sphereColorBack;
+            ctx.lineWidth = isEquator ? (isFront ? 1.6 : 0.9) : (isFront ? 1.0 : 0.6);
+            if (!isFront && !isMac) ctx.setLineDash([2, 3]);
+            else ctx.setLineDash([]);
+            ctx.stroke();
+          }
+        });
+
+        // Meridians (Longitude lines)
+        const meridianCount = 8;
+        for (let m = 0; m < meridianCount; m++) {
+          const phi = (m / meridianCount) * Math.PI;
+          const segments = 40;
+          for (let i = 0; i < segments; i++) {
+            const t1 = (i / segments) * Math.PI * 2;
+            const t2 = ((i + 1) / segments) * Math.PI * 2;
+
+            const x1 = sphereRadius * Math.cos(t1) * Math.cos(phi);
+            const y1 = sphereRadius * Math.sin(t1);
+            const z1 = sphereRadius * Math.cos(t1) * Math.sin(phi);
+
+            const x2 = sphereRadius * Math.cos(t2) * Math.cos(phi);
+            const y2 = sphereRadius * Math.sin(t2);
+            const z2 = sphereRadius * Math.cos(t2) * Math.sin(phi);
+
+            const p1 = projectPoint(x1, y1, z1, rotX, rotY);
+            const p2 = projectPoint(x2, y2, z2, rotX, rotY);
+
+            const isFront = (p1.z + p2.z) / 2 > 0;
+
+            ctx.beginPath();
+            ctx.moveTo(sphereX + p1.x, sphereY - p1.y);
+            ctx.lineTo(sphereX + p2.x, sphereY - p2.y);
+            ctx.strokeStyle = isFront ? sphereColorFront : sphereColorBack;
+            ctx.lineWidth = isFront ? 0.9 : 0.5;
+            if (!isFront && !isMac) ctx.setLineDash([1, 3]);
+            else ctx.setLineDash([]);
+            ctx.stroke();
+          }
+        }
+        ctx.setLineDash([]);
+
+        // Ecliptic Ring (Tilted at 23.44°)
+        const eclipticObliquity = 0.409;
+        const eclipticSteps = 48;
+        for (let i = 0; i < eclipticSteps; i++) {
+          const a1 = (i / eclipticSteps) * Math.PI * 2;
+          const a2 = ((i + 1) / eclipticSteps) * Math.PI * 2;
+
+          const p1Raw = {
+            x: sphereRadius * Math.cos(a1),
+            y: sphereRadius * Math.sin(a1) * Math.sin(eclipticObliquity),
+            z: sphereRadius * Math.sin(a1) * Math.cos(eclipticObliquity)
+          };
+          const p2Raw = {
+            x: sphereRadius * Math.cos(a2),
+            y: sphereRadius * Math.sin(a2) * Math.sin(eclipticObliquity),
+            z: sphereRadius * Math.sin(a2) * Math.cos(eclipticObliquity)
+          };
+
+          const p1 = projectPoint(p1Raw.x, p1Raw.y, p1Raw.z, rotX, rotY);
+          const p2 = projectPoint(p2Raw.x, p2Raw.y, p2Raw.z, rotX, rotY);
+
+          if ((p1.z + p2.z) / 2 > 0) {
+            ctx.beginPath();
+            ctx.moveTo(sphereX + p1.x, sphereY - p1.y);
+            ctx.lineTo(sphereX + p2.x, sphereY - p2.y);
+            ctx.strokeStyle = eclipticColor;
+            ctx.lineWidth = 1.4;
+            ctx.stroke();
+          }
+        }
+
+        // Project Stars
+        const projectedStars = STARS.map(s => {
+          const cart = sphericalToCartesian(s.ra, s.dec, sphereRadius * 0.98);
+          const proj = projectPoint(cart.x, cart.y, cart.z, rotX, rotY);
+          return { ...s, proj };
+        });
+
+        // Draw Constellation Lines (Front Hemisphere)
+        CONSTELLATION_LINES.forEach(([i1, i2]) => {
+          const s1 = projectedStars[i1];
+          const s2 = projectedStars[i2];
+          if (s1 && s2 && s1.proj.z > -sphereRadius * 0.2 && s2.proj.z > -sphereRadius * 0.2) {
+            ctx.beginPath();
+            ctx.moveTo(sphereX + s1.proj.x, sphereY - s1.proj.y);
+            ctx.lineTo(sphereX + s2.proj.x, sphereY - s2.proj.y);
+            ctx.strokeStyle = isMac ? 'rgba(0,0,0,0.45)' : 'rgba(120, 220, 255, 0.45)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        });
+
+        // Draw Stars & Labels
+        projectedStars.forEach(s => {
+          if (s.proj.z > 0) {
+            const starRadius = isMac ? (s.mag > 1.6 ? 2.5 : 1.8) : (s.mag > 1.6 ? 2.8 : 2.0);
+            ctx.beginPath();
+            ctx.arc(sphereX + s.proj.x, sphereY - s.proj.y, starRadius, 0, Math.PI * 2);
+            ctx.fillStyle = starColor;
+            ctx.fill();
+
+            // Star Name
+            if (s.name && s.proj.z > sphereRadius * 0.25) {
+              ctx.font = '9px "JetBrains Mono", monospace';
+              ctx.fillStyle = isMac ? 'rgba(0,0,0,0.6)' : 'rgba(120, 255, 180, 0.7)';
+              ctx.fillText(s.name, sphereX + s.proj.x + 4, sphereY - s.proj.y - 2);
+            }
+          }
+        });
+
+        // ==========================================
+        // 3. DYNAMIC TEXT WRAP AROUND SPHERE VIA PRETEXT
+        // ==========================================
+        ctx.font = FONT_SPEC;
+        ctx.fillStyle = isMac ? '#000000' : '#4ade80';
+
+        let cursor: LayoutCursor = { segmentIndex: 0, graphemeIndex: 0 };
+        const padX = 22;
+        const padY = 32;
+        let lineY = padY;
+        const rEff = sphereRadius + 18; // Safety boundary around celestial sphere
+
+        while (lineY < displayH - 16) {
+          const dy = Math.abs(lineY - sphereY);
+          let startX = padX;
+          let availWidth = displayW - padX * 2;
+
+          if (dy < rEff) {
+            // Row intersects sphere obstacle
+            const dx = Math.sqrt(rEff * rEff - dy * dy);
+            const obstacleLeft = sphereX - dx;
+            const obstacleRight = sphereX + dx;
+
+            const roomLeft = obstacleLeft - padX;
+            const roomRight = displayW - padX - obstacleRight;
+
+            // Route text to side with adequate space
+            if (sphereX >= displayW / 2) {
+              // Sphere is on the right/center: text routes to left
+              if (roomLeft > 85) {
+                startX = padX;
+                availWidth = roomLeft - 10;
+              } else if (roomRight > 85) {
+                startX = obstacleRight + 12;
+                availWidth = roomRight - 10;
+              } else {
+                // Sphere occupies nearly entire width on this row
+                lineY += LINE_HEIGHT;
+                continue;
+              }
+            } else {
+              // Sphere is on the left: text routes to right
+              if (roomRight > 85) {
+                startX = obstacleRight + 12;
+                availWidth = roomRight - 10;
+              } else if (roomLeft > 85) {
+                startX = padX;
+                availWidth = roomLeft - 10;
+              } else {
+                lineY += LINE_HEIGHT;
+                continue;
+              }
+            }
+          }
+
+          if (availWidth < 60) {
+            lineY += LINE_HEIGHT;
+            continue;
+          }
+
+          // Pretext layout calculation: zero DOM reflow, microsecond speed!
+          const line = layoutNextLine(preparedBio, Math.floor(availWidth), cursor);
+          if (!line) {
+            break; // All text laid out
+          }
+
+          // Render text line onto canvas
+          ctx.fillText(line.text, startX, lineY);
+          cursor = line.end;
+          lineY += LINE_HEIGHT;
+        }
+
+        ctx.restore();
+        requestAnimationFrame(renderFrame);
+      }
+
+      // Start 60 FPS Canvas loop
+      requestAnimationFrame(renderFrame);
+
+    </script>
+  </body>
+</html>

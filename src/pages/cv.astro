@@ -1,0 +1,153 @@
+---
+// src/pages/cv.astro
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Curriculum Vitae — Academic LaTeX Paper</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#f0ede6] text-[#111111] font-serif min-h-screen py-10 px-4 antialiased selection:bg-[#c9d5e8]">
+    <!-- Top Bar Navigation -->
+    <header class="max-w-4xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-4 font-mono text-xs border-b border-[#d1cbc2] pb-3 text-[#555]">
+      <a 
+        href="/" 
+        class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#e4dfd5] hover:bg-[#d8d2c6] text-[#222] border border-[#bbb] rounded shadow-xs transition-colors font-semibold"
+      >
+        <span>← RETURN TO VCR/MAC CONSOLE</span>
+      </a>
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          TAPE 1: LOADED
+        </span>
+        <span class="text-neutral-500 hidden sm:inline">pdfTeX 3.141592653-2.6-1.40.24 (TeX Live 2024)</span>
+      </div>
+    </header>
+
+    <!-- Simulated LaTeX A4 Sheet -->
+    <main class="max-w-3xl mx-auto bg-[#faf8f5] shadow-[0_4px_30px_rgba(0,0,0,0.08)] border border-[#ddd6ca] px-8 sm:px-16 py-14 sm:py-20 relative">
+      <!-- Watermark / Document metadata -->
+      <div class="absolute top-4 right-8 font-mono text-[10px] text-[#999] tracking-wider uppercase">
+        Doc: CV-ACAD-2026.REV4 // CONFIDENTIAL
+      </div>
+
+      <!-- Article Header -->
+      <header class="text-center mb-10 border-b border-[#222] pb-8">
+        <h1 class="text-3xl sm:text-4xl font-normal tracking-wide text-neutral-900 mb-2 font-['EB_Garamond',serif]">
+          Curriculum Vitae et Studiorum
+        </h1>
+        <p class="text-lg text-neutral-800 font-semibold mb-1">
+          BiaJoe &mdash; Computer Science & AI Systems
+        </p>
+        <p class="text-sm text-neutral-600 italic mb-3">
+          Department of Computer Science &middot; Systems Architecture & Autonomous Computing
+        </p>
+        <p class="text-xs font-mono text-neutral-600">
+          Email: <span class="underline">poppae@developer.local</span> &bull; Web: <a href="/" class="underline hover:text-black">biajoe.dev</a> &bull; GitHub: <a href="https://github.com/BiaJoe" target="_blank" rel="noreferrer" class="underline hover:text-black">github.com/BiaJoe</a>
+        </p>
+      </header>
+
+      <!-- Abstract Section -->
+      <section class="mb-8 px-4 sm:px-8 py-3 bg-[#f5f2ec] border-l-2 border-[#555] text-justify">
+        <h2 class="text-xs uppercase tracking-widest font-bold text-center mb-1 text-neutral-700">Abstract</h2>
+        <p class="text-xs sm:text-sm leading-relaxed text-neutral-700 italic">
+          Overview of scholarly milestones, engineering projects, and research topics in modern computing. Special focus on distributed micro-architectures, self-hosted infrastructure, interactive hardware emulation, and 3D algorithmic rendering within high-performance canvas frameworks.
+        </p>
+      </section>
+
+      <!-- 1. Education -->
+      <section class="mb-8">
+        <h2 class="text-base uppercase tracking-wider font-bold border-b border-neutral-400 pb-1 mb-3 text-neutral-900 flex justify-between items-baseline">
+          <span>1. Education & Scholarly Formation</span>
+          <span class="text-xs font-mono text-neutral-500 font-normal">2022 &ndash; Present</span>
+        </h2>
+        <div class="mb-4">
+          <div class="flex justify-between text-sm font-semibold text-neutral-800">
+            <span>B.Sc. in Computer Science & Engineering</span>
+            <span class="font-normal italic">Expected Graduation: 2026</span>
+          </div>
+          <p class="text-xs text-neutral-600 italic mb-1">Focus Areas: Operating Systems, Distributed Systems, Discrete Mathematics & Algorithms</p>
+          <ul class="list-disc list-inside text-xs text-neutral-700 space-y-1 ml-2">
+            <li>Thesis research on browser-based compute and vector layout optimization.</li>
+            <li>Laboratory coursework in computer network routing, concurrency control, and relational database internals.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 2. Technical Proficiencies -->
+      <section class="mb-8">
+        <h2 class="text-base uppercase tracking-wider font-bold border-b border-neutral-400 pb-1 mb-3 text-neutral-900">
+          2. Technical Proficiencies & Tools
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div class="p-3 bg-neutral-50 border border-neutral-200 rounded-xs">
+            <span class="font-bold text-neutral-900 block mb-1">Languages & Core:</span>
+            <p class="text-neutral-700 leading-relaxed font-mono text-[11px]">
+              TypeScript, C++, Rust, Python, Go, POSIX Shell, SQL, TeX/LaTeX
+            </p>
+          </div>
+          <div class="p-3 bg-neutral-50 border border-neutral-200 rounded-xs">
+            <span class="font-bold text-neutral-900 block mb-1">Web & Canvas:</span>
+            <p class="text-neutral-700 leading-relaxed font-mono text-[11px]">
+              Astro, Web Audio API, WebGL / Canvas2D, Tailwind CSS, Pretext Engine
+            </p>
+          </div>
+          <div class="p-3 bg-neutral-50 border border-neutral-200 rounded-xs">
+            <span class="font-bold text-neutral-900 block mb-1">Systems & Self-Hosting:</span>
+            <p class="text-neutral-700 leading-relaxed font-mono text-[11px]">
+              Linux (Debian/Arch), Docker, Kubernetes, WireGuard, Nginx, Prometheus
+            </p>
+          </div>
+          <div class="p-3 bg-neutral-50 border border-neutral-200 rounded-xs">
+            <span class="font-bold text-neutral-900 block mb-1">AI & Data Engineering:</span>
+            <p class="text-neutral-700 leading-relaxed font-mono text-[11px]">
+              PyTorch, Local LLM quantization (GGUF, Ollama), Vector DBs, Fine-tuning
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Key Projects -->
+      <section class="mb-8">
+        <h2 class="text-base uppercase tracking-wider font-bold border-b border-neutral-400 pb-1 mb-3 text-neutral-900">
+          3. Selected Engineering Projects
+        </h2>
+        <div class="space-y-4 text-xs">
+          <div>
+            <div class="flex justify-between font-bold text-neutral-900">
+              <span>Personal VCR/Macintosh Celestial Console</span>
+              <span class="font-mono font-normal text-neutral-500">2026</span>
+            </div>
+            <p class="text-neutral-700 mt-1 leading-relaxed">
+              Designed a reactive dual-era interface with Astro, Tailwind, Web Audio synthesis, and dynamic text wrapping via <code class="bg-neutral-200 px-1 py-0.5 rounded text-[10px]">@chenglou/pretext</code> around a real-time 3D celestial wireframe model.
+            </p>
+          </div>
+
+          <div>
+            <div class="flex justify-between font-bold text-neutral-900">
+              <span>Home Server Edge Cluster</span>
+              <span class="font-mono font-normal text-neutral-500">2024 &ndash; Present</span>
+            </div>
+            <p class="text-neutral-700 mt-1 leading-relaxed">
+              Low-power micro-datacenter running private Git repositories, container orchestration, VPN relays, and storage backup matrices with automated health telemetry.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Footer Citation -->
+      <footer class="mt-12 pt-4 border-t border-neutral-300 flex flex-wrap justify-between items-center text-[10px] text-neutral-500 font-mono">
+        <div>Compiled with Astro v7 &bull; Typeset in LaTeX Article Mode</div>
+        <div>Page 1 of 1 &bull; Document hash: 0x88F2A1</div>
+      </footer>
+    </main>
+  </body>
+</html>
